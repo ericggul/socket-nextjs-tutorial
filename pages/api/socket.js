@@ -33,6 +33,69 @@ export default function handler(req, res) {
         socket.join("demo-screen");
       });
 
+      //////////////////////////////////////////////////////////////
+      //// Sample Use Cases for IDC2
+      /////1. Device Init Logic
+
+      socket.on('mobile-init', (data) => {
+        console.log('mobile new user handling', data);
+        socket.join('mobile');
+        socket.to('entrance').emit('entrance-new-user', data);
+      })
+
+      socket.on('device-init', (data) => {
+        console.log('device init handling', data);
+        socket.join('device');
+      })
+
+      socket.on('controller-init', (data) => {
+        console.log('controller init handling', data);
+        socket.join('controller');
+      })
+
+      socket.on('entrance-init', (data) => {
+        console.log('entrance init handling', data);
+        socket.join('entrance');
+      })
+
+
+      /////2. Cross-Device Communication Logic
+
+
+      //2-1. Mobile --> 
+      //comment out: mobile-init should do this job
+      // socket.on('mobile-new-user', (data) => {
+      //   console.log('mobile new user handling', data);
+      //   socket.to('entrance').emit('entrance-new-user', data);
+      // })
+
+
+      socket.on('mobile-new-name', (data) => {
+        console.log('mobile new name handling', data);
+        socket.to('entrance').emit('entrance-new-name', data);
+        socket.to('controller').emit('controller-new-name', data);
+      })
+
+      socket.on('mobile-new-voice', (data) => {
+        console.log('mobile-new voice handling', data);
+        socket.to('devcie').emit('device-new-voice', data);
+        socket.to('controller').emit('controller-new-voice', data);
+      })
+
+      //2-2. Controller --> 
+      socket.on('controller-new-decision', (data) => {
+        console.log('controller new decision handling', data);
+        socket.to('device').emit('device-new-decision', data);
+        socket.to('mobile').emit('mobile-new-decision', data);
+      })
+
+
+      //////////////////////////////////////////////////////////////
+      //// End of Sample Use Cases for IDC2
+      //////////////////////////////////////////////////////////////
+
+
+      //////////DEMO VERSIONS BELOW
       // actions
       socket.on("mobile-text", (data) => {
         // { text }
